@@ -1,0 +1,48 @@
+create database family;
+
+drop table members;
+drop table relationships;
+drop table family;
+
+create table members(
+m_id  SERIAL PRIMARY KEY,
+u_id integer,
+m_name char(50),
+m_created_date timestamp
+);
+
+insert into members(u_id,m_name,m_created_date) values (1,'v.sengotuvel',now());
+insert into members(u_id,m_name,m_created_date) values (1,'nallammal',now());
+insert into members(u_id,m_name,m_created_date) values (1,'s.mullaivalavan',now());
+insert into members(u_id,m_name,m_created_date) values (1,'m.santhi',now());
+insert into members(u_id,m_name,m_created_date) values (1,'m.gokulakrishnan',now());
+insert into members(u_id,m_name,m_created_date) values (1,'b.saranya',now());
+insert into members(u_id,m_name,m_created_date) values (1,'g.mahathi',now());
+insert into members(u_id,m_name,m_created_date) values (1,'m.veluthambi',now());
+
+create table relationships(
+r_id  SERIAL PRIMARY KEY,
+f_id integer,
+r_m_id1 integer,
+r_m_id2 integer,
+r_parent_id integer,
+r_created_date timestamp
+);
+
+insert into relationships(f_id, r_m_id1, r_m_id2, r_parent_id, r_created_date) values (1,null,2,0,now());
+insert into relationships(f_id, r_m_id1, r_m_id2, r_parent_id, r_created_date) values (1,3,4,1,now());
+insert into relationships(f_id, r_m_id1, r_m_id2, r_parent_id, r_created_date) values (1,5,6,2,now());
+insert into relationships(f_id, r_m_id1, r_m_id2, r_parent_id, r_created_date) values (1,7,null,3,now());
+insert into relationships(f_id, r_m_id1, r_m_id2, r_parent_id, r_created_date) values (1,8,null,2,now());
+
+select m1.m_name as m1,m2.m_name as m2 from relationships left join members m1 on r_m_id1=m1.m_id left join members m2 on r_m_id2=m2.m_id
+
+
+create table family(
+f_id SERIAL PRIMARY KEY,
+f_name char(50),
+f_u_id integer,
+f_created_date timestamp
+);
+
+insert into family(f_name, u_id, f_created_date) values ('gokul',1,now());
