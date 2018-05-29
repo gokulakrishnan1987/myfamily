@@ -22,6 +22,7 @@ export class HomeComponent implements OnInit {
 
  	elementData = [];
 	selected2 = 1;
+    members = [];
 
 	
   	constructor(private familyService: FamilyService, private dialog: MatDialog) { }
@@ -29,11 +30,16 @@ export class HomeComponent implements OnInit {
   	ngOnInit() {  		
   		this.createD3Gauge();  
   		this.getFamily();
+        this.getMembers();
   	}
 
-  	openMemberDialog() {
+  	openMemberDialog(memberId, memberName) {
     	const dialogConfig = new MatDialogConfig();    	
-    	dialogConfig.data = document.cookie.split('uid=')[1].split(';')[0];
+    	dialogConfig.data = {
+            'uid': document.cookie.split('uid=')[1].split(';')[0],
+            'mid': memberId,
+            'mname': memberName
+        };
     	this.dialog.open(AddMemberDialogComponent, dialogConfig);
   	}
 
@@ -119,5 +125,15 @@ export class HomeComponent implements OnInit {
                 }
   			});
   	}
+
+    getMembers(): void {
+
+        let that = this;
+        this.familyService.getMembers(document.cookie.split('uid=')[1].split(';')[0])
+            .subscribe(result => {                  
+                that.members = result['rows'];  
+                console.log(that.members);
+            });
+    }
 
 }

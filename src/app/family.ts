@@ -1,6 +1,7 @@
 export class Member {
 	u_id: number;
-    name: string;    
+    name: string;
+    m_id: number;    
 }
 
 export class Relationship {

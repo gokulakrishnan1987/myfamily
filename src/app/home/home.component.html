@@ -12,5 +12,16 @@
 			</mat-select>
 	  	</mat-form-field>	
   	</mat-toolbar-row>
-</mat-toolbar>	
-<div id="chart-container"></div>
+</mat-toolbar>
+<div style="width: 100%;overflow:visible;">
+    <div style="float:left;">
+    	<ul *ngFor="let mem of members; let i = index">
+	    	
+	      	<button mat-button (click)="openMemberDialog(mem.m_id,mem.m_name)">{{mem.m_name}}</button>
+	      	<!-- </li> -->
+	  	</ul>
+    </div>
+    <div id="chart-container" style="float:right;width: 85%">
+    </div>
+</div>	
+

@@ -19,9 +19,18 @@ export class AddMemberDialogComponent implements OnInit {
                 private familyService: FamilyService) { }
 
     ngOnInit() {
+        this.getMember();
     }
 
     member: Member = new Member();
+
+    getMember() {
+        let that = this;
+        if(that.data.mname != undefined) {
+            this.member.name = that.data.mname.trim();
+            this.member.m_id = that.data.mid;
+        };
+    }
 
     close() {
         let that = this;
@@ -31,7 +40,7 @@ export class AddMemberDialogComponent implements OnInit {
 
     save(){
         let that = this;
-        this.member.u_id = that.data;
+        this.member.u_id = that.data.uid;
         that.familyService.newMember(this.member)
             .subscribe(result => {
                 this.dialogRef.close();

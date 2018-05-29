@@ -126,25 +126,37 @@ function newUser(req, res) {
 function newMember(req, res) {
 	//console.log(req.body.email);
 
-	let query = "select m_id from members where m_name='"+ req.body.name + "' and u_id='"+ req.body.u_id +"'";	
-	pool.query(query, (err, resp) => {			
-		if(!err) {			
-			if (resp.rows.length === 0) {
-				query = "insert into members(u_id,m_name,m_created_date) " +
-					" values('"+ req.body.u_id +"','"+req.body.name+"',now())";							
+	if(req.body.m_id != "" & req.body.m_id != null) {
+		let query = "update members set m_name='" + req.body.name + "' where m_id=" + req.body.m_id;					
 				pool.query(query, (e, r) => {					
 					if(!e) {
 						res.status(200).send(r);
-					}
-				});
-			} else {
-				res.status(200).send(resp);
-			}
-		} else {
-			console.log(err);
+					} else {
+			console.log(e);
 		}
-	});
-	//res.send('Wiki home page');
+				});
+
+	} else {
+		let query = "select m_id from members where m_name='"+ req.body.name + "' and u_id='"+ req.body.u_id +"'";	
+		pool.query(query, (err, resp) => {			
+			if(!err) {			
+				if (resp.rows.length === 0) {
+					query = "insert into members(u_id,m_name,m_created_date) " +
+						" values('"+ req.body.u_id +"','"+req.body.name+"',now())";							
+					pool.query(query, (e, r) => {					
+						if(!e) {
+							res.status(200).send(r);
+						}
+					});
+				} else {
+					res.status(200).send(resp);
+				}
+			} else {
+				console.log(err);
+			}
+		});
+		//res.send('Wiki home page');
+	}
 }
 
 //Query Execution
