@@ -38,10 +38,13 @@ export class AddRelationshipDialogComponent implements OnInit {
     getMembers(): void {
 
   		let that = this;
-  		
-  		this.familyService.getMembers(that.data)
+  		console.log(that.data);
+  		this.familyService.getMembers(that.data.fId)
   			.subscribe(result => {   				
-  				that.elementData = result['rows'];
+  				that.elementData = result['rows'];          
+          this.member1 = that.data.m1;
+          this.member2 = that.data.m2;
+          this.parent = that.data.parentId
   				console.log(that.elementData);
   			});
   	}
@@ -50,7 +53,7 @@ export class AddRelationshipDialogComponent implements OnInit {
 
   		let that = this;
   		
-  		this.familyService.getRelationships(that.data)
+  		this.familyService.getRelationships(that.data.fId)
   			.subscribe(result => {   				
   				that.relationships = result['rows'];
   				console.log(that.relationships);
@@ -59,10 +62,11 @@ export class AddRelationshipDialogComponent implements OnInit {
 
     save(){
         let that = this;
-        this.relationship.f_id = that.data;
+        this.relationship.f_id = that.data.fId;
         this.relationship.r_m_id1 = this.member1;
         this.relationship.r_m_id2 = this.member2;
         this.relationship.r_parent_id = that.parent;
+        this.relationship.r_id = that.data.rId;
         that.familyService.newRelationship(this.relationship)
             .subscribe(result => {
                 this.dialogRef.close();

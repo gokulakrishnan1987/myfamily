@@ -15,13 +15,16 @@
 </mat-toolbar>
 <div style="width: 100%;overflow:visible;">
     <div style="float:left;">
-    	<ul *ngFor="let mem of members; let i = index">
-	    	
-	      	<button mat-button (click)="openMemberDialog(mem.m_id,mem.m_name)">{{mem.m_name}}</button>
-	      	<!-- </li> -->
+    	<ul *ngFor="let mem of members; let i = index">	    	
+	      	<button mat-button (click)="openMemberDialog(mem.m_id,mem.m_name)">{{mem.m_name}}</button>	      	
 	  	</ul>
     </div>
-    <div id="chart-container" style="float:right;width: 85%">
+    <div id="chart-container" style="width: 70%">
+    </div>
+    <div style="float:right;width: 15%">
+    	<ul *ngFor="let mem of relationships; let i = index">	    	    		
+	      	<button mat-button (click)="openRelationshipDialog(mem.r_m_id1,mem.r_m_id2,mem.parentid,mem.r_id)">{{mem.m1}} - {{mem.m2}}</button>
+	  	</ul>
     </div>
 </div>	
 

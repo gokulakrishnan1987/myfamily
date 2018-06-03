@@ -23,6 +23,7 @@ export class HomeComponent implements OnInit {
  	elementData = [];
 	selected2 = 1;
     members = [];
+    relationships = [];
 
 	
   	constructor(private familyService: FamilyService, private dialog: MatDialog) { }
@@ -40,13 +41,26 @@ export class HomeComponent implements OnInit {
             'mid': memberId,
             'mname': memberName
         };
-    	this.dialog.open(AddMemberDialogComponent, dialogConfig);
+    	let dialogRef = this.dialog.open(AddMemberDialogComponent, dialogConfig);
+
+        dialogRef.afterClosed().subscribe(result => {           
+        });
   	}
 
-  	openRelationshipDialog() {
+  	openRelationshipDialog(m1, m2, parentId, relationshipId) {
     	const dialogConfig = new MatDialogConfig();
-    	dialogConfig.data = this.selected2;
-    	this.dialog.open(AddRelationshipDialogComponent, dialogConfig);
+    	dialogConfig.data = {
+            'fId': this.selected2,
+            'm1': m1,
+            'm2': m2,
+            'parentId': parentId,
+            'rId': relationshipId
+        };
+    	let dialogRef = this.dialog.open(AddRelationshipDialogComponent, dialogConfig);
+
+        dialogRef.afterClosed().subscribe(result => {
+            this.createD3Gauge();
+        })
   	}
 
     openFamilyDialog() {
@@ -60,8 +74,7 @@ export class HomeComponent implements OnInit {
   		return {
 			'id': row.r_id,
 			'name': row.m1,
-			'title': row.m2,
-			'children': []
+			'title': row.m2,			
 	  	};
   	}
   	
@@ -82,7 +95,10 @@ export class HomeComponent implements OnInit {
   		if(childrens !== undefined) {
 	  		for(let children of childrens) {   			 			
 	  			if(children.id === parentId) {  				  				  				
-	  				children.children.push(this.newRelationship(row));		  		
+                    if(children.children === undefined){
+                        children['children'] = [];                        
+                    }
+                    children['children'].push(this.newRelationship(row));                  
 	  			}
 	  			this.addChildrens(children.children, row.parentid, row);
 	  		}
@@ -91,13 +107,13 @@ export class HomeComponent implements OnInit {
 
     createD3Gauge() { 
    		let that = this;   		
-		//document.addEventListener('DOMContentLoaded', function () {			
+		
 			that.familyService.getRelationships(this.selected2)
-	  			.subscribe(result => {   	
-	  				console.log(result);
+	  			.subscribe(result => {   		  				
 	  				that.datasource = {};
+                    that.relationships = result['rows'];
 	  				that.getTreeStructure(result['rows'], 0);
-	  				
+	  				console.log(that.datasource);
 	  				
 					let orgchart = new OrgChart({
 			  	  		'data' : that.datasource,
@@ -105,12 +121,12 @@ export class HomeComponent implements OnInit {
 			    		'nodeContent': 'title'
 			  		});
 
-					//document.querySelector('#chart-container').innerHTML('');
+		
 					var game = document.querySelector('#chart-container');
 					game.innerHTML = '';
 			  		document.querySelector('#chart-container').appendChild(orgchart); 
 	  			});	
-	 	//});
+	 	
 	}
 
 
@@ -131,8 +147,7 @@ export class HomeComponent implements OnInit {
         let that = this;
         this.familyService.getMembers(document.cookie.split('uid=')[1].split(';')[0])
             .subscribe(result => {                  
-                that.members = result['rows'];  
-                console.log(that.members);
+                that.members = result['rows'];                  
             });
     }
 

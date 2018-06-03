@@ -5,6 +5,7 @@ export class Member {
 }
 
 export class Relationship {
+	r_id: number;
 	f_id: number;
 	r_m_id1: number;
 	r_m_id2: number;

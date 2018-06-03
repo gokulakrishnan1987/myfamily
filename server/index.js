@@ -50,7 +50,7 @@ function test(req, res) {
 
 //Query Execution
 function getRelationships(req, res) {
-	let query = " select r_id, m1.m_name as m1,m2.m_name as m2, r_parent_id as parentId from relationships" +
+	let query = " select r_id, m1.m_name as m1,m2.m_name as m2,r_m_id1,r_m_id2, r_parent_id as parentId from relationships" +
 				" left join members m1 on r_m_id1=m1.m_id" +
 				" left join members m2 on r_m_id2=m2.m_id" +
 				" where f_id=" + req.query.familyId;
@@ -189,6 +189,23 @@ function newRelationship(req, res) {
 	
 	req.body.r_parent_id = req.body.r_parent_id == null ? 0:req.body.r_parent_id;
 
+	console.log(req.body);
+
+	if(req.body.r_id != "" & req.body.r_id != null) {
+		let query = "update relationships set f_id='" + req.body.f_id + "',r_m_id1="+req.body.r_m_id1 +
+					",r_m_id2="+req.body.r_m_id2+",r_parent_id="+req.body.r_parent_id+" where r_id=" + req.body.r_id;					
+
+			console.log(query);
+				pool.query(query, (e, r) => {					
+					if(!e) {
+						res.status(200).send(r);
+					} else {
+			console.log(e);
+		}
+				});
+
+	} else {
+
 	let query = "insert into relationships(f_id,r_m_id1,r_m_id2,r_parent_id,r_created_date) " +
 					" values("+ req.body.f_id +","+req.body.r_m_id1+","+req.body.r_m_id2+","+req.body.r_parent_id+",now())";							
 				pool.query(query, (e, r) => {					
@@ -198,7 +215,7 @@ function newRelationship(req, res) {
 			console.log(e);
 		}
 				});
-
+	}
 
 }
 
