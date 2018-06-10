@@ -43,12 +43,26 @@ export class AppComponent implements OnInit {
 	  		console.log(result);
 	  		document.cookie = "uid=" + result['rows'][0].u_id;
 	  		console.log(document.cookie.split(';').filter((item) => { return item.includes('uid=')})[0].split('=')[1]);
+	  		localStorage.setItem('token', result['auth'].token);
         	this.router.navigate(['home']);
         });
         // Now sign-in with userData
         //...
             
       });
+	}
+
+	logout() {
+   		this.socialAuthService.signOut().then(() => {
+
+   		},(err) => {
+   			console.log(err);
+   		});
+ 	//   	.then(
+	// 	(data) => {
+	//     	console.log(data);
+	//     })
+	// }
 	}
 
    	ngOnInit() {   		

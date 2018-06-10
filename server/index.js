@@ -2,10 +2,15 @@ const pg = require('pg');
 var express=require('express');
 var app=express();
 var router = express.Router();
-// var cors = require('cors')
-var bodyParser = require('body-parser')
+var bodyParser = require('body-parser');
+//var cors = require('cors');
 
-// app.options('*', cors());
+
+var jwt = require('jsonwebtoken');
+var bcrypt = require('bcryptjs');
+
+
+
 app.use(bodyParser.urlencoded({ extended: false }))
 app.use(bodyParser.json())
 
@@ -26,7 +31,7 @@ app.use(function (req, res, next) {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, PATCH, DELETE');
 
     // Request headers you wish to allow
-    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type, authorization');
 
     // Set to true if you need the website to include cookies in the requests sent
     // to the API (e.g. in case you use sessions)
@@ -40,7 +45,7 @@ app.use(function (req, res, next) {
 //Query Execution
 function test(req, res) {
 	pool.query("SELECT NOW()", (err, resp) => {
-		console.log(res.rows);			
+		//console.log(res.rows);			
 		if(!err) {
 			res.status(200).send(resp);
 		}
@@ -56,7 +61,7 @@ function getRelationships(req, res) {
 				" where f_id=" + req.query.familyId;
 
 	
-
+	console.log(query);
 	pool.query(query, (err, resp) => {			
 		if(!err) {
 			console.log(resp);
@@ -113,7 +118,8 @@ function newUser(req, res) {
 					}
 				});
 			} else {
-				res.status(200).send(resp);
+				//res.status(200).send(resp);
+				auth(req, res, resp);
 			}
 		} else {
 			console.log(err);
@@ -189,7 +195,7 @@ function newRelationship(req, res) {
 	
 	req.body.r_parent_id = req.body.r_parent_id == null ? 0:req.body.r_parent_id;
 
-	console.log(req.body);
+	//console.log(req.body);
 
 	if(req.body.r_id != "" & req.body.r_id != null) {
 		let query = "update relationships set f_id='" + req.body.f_id + "',r_m_id1="+req.body.r_m_id1 +
@@ -233,17 +239,42 @@ function getMembers(req, res) {
 	//res.send('Wiki home page');
 }
 
+function auth(req, res, resp) {
+	var token = jwt.sign({ id: resp.rows[0].u_id }, "supersecret", {
+      expiresIn: 86400 // expires in 24 hours
+    });
+    resp['auth'] = { auth: true, token: token };
+    res.status(200).send(resp);
+}
+
+function isAuthenticated(req, res, next) {
+	console.log('asdfasdfad');
+	var token = req.headers['x-access-token'];
+	if (!token) {
+		return res.status(401).send({ auth: false, message: 'No token provided.' });
+	}
+	console.log(token);
+	jwt.verify(token, "supersecret", function(err, decoded) {
+		console.log("supper");
+    	if (err) return res.status(500).send({ auth: false, message: 'Failed to authenticate token.' });
+    	else next();
+    
+    	//res.status(200).send(decoded);
+  	});
+}
+
 
 //Routes
 router.get('/', test);
-router.get('/relationships', getRelationships);
-router.get('/family', getfamily);
-router.get('/user', getUser);
+router.get('/relationships', isAuthenticated, function(req, res) {getRelationships(req, res)});
+router.get('/family', isAuthenticated, function(req, res) {getfamily(req, res)});
+router.get('/user', isAuthenticated, function(req, res) {getUser(req, res)});
 router.post('/new-user', newUser);
-router.post('/new-member', newMember);
-router.post('/family', newFamily);
-router.get('/members', getMembers);
-router.post('/new-relationship', newRelationship);
+router.post('/new-member', isAuthenticated, function(req, res) {newMember(req, res)});
+router.post('/family', isAuthenticated, function(req, res) {newFamily(req, res)});
+router.get('/members', isAuthenticated, function(req, res) {getMembers(req, res)});
+router.post('/new-relationship', isAuthenticated, function(req, res) {newRelationship(req, res)});
+router.post('/auth', auth);
 
 
 module.exports = router;

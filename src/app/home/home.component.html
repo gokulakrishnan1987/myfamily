@@ -3,14 +3,13 @@
 	    <span>{{ title }}</span>
 	    <button mat-button (click)="openMemberDialog()">Member</button>
 	    <button mat-button (click)="openFamilyDialog()">Family</button>
-	    <button mat-button (click)="openRelationshipDialog()">Relationship</button>
-	    <button mat-button>Contact</button>    
+	    <button mat-button (click)="openRelationshipDialog()">Relationship</button>	    
 	    <span class="example-spacer"></span>    	    
 		<mat-form-field class="pull-mat-right">
 	  		<mat-select [(ngModel)]="selected2" (change)="createD3Gauge()">
 				<mat-option *ngFor="let num of elementData" [value]="num.f_id">{{ num.f_name }}</mat-option>
 			</mat-select>
-	  	</mat-form-field>	
+	  	</mat-form-field>
   	</mat-toolbar-row>
 </mat-toolbar>
 <div style="width: 100%;overflow:visible;">

@@ -10,6 +10,10 @@ export class FamilyService {
 
   	constructor(private http:HttpClient) {}
 
+    auth() {
+        return this.http.get('http://localhost:8080/api/auth');
+    }
+
   	getTest() {
         return this.http.get('http://localhost:8080/api');
     }

@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import { HttpClientModule }    from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS }    from '@angular/common/http';
+import { MyHttpInterceptor } from './my-http-interceptor';
 import { RouterModule, Routes } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 
@@ -85,7 +86,11 @@ export function getAuthServiceConfigs() {
   providers: [FamilyService, {
       provide: AuthServiceConfig,
       useFactory: getAuthServiceConfigs
-    }],
+    }, { 
+    provide: HTTP_INTERCEPTORS, 
+    useClass: MyHttpInterceptor, 
+    multi: true 
+  }],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

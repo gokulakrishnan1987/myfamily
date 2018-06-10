@@ -5,6 +5,7 @@ import OrgChart from '../../assets/orgchart-webcomponents.js';
 import { FamilyService } from '../family.service';
 
 import {MatDialog, MatDialogConfig} from "@angular/material";
+import { Router } from '@angular/router';
 
 import { AddMemberDialogComponent } from '../add-member-dialog/add-member-dialog.component';
 import { AddRelationshipDialogComponent } from '../add-relationship-dialog/add-relationship-dialog.component';
@@ -26,7 +27,7 @@ export class HomeComponent implements OnInit {
     relationships = [];
 
 	
-  	constructor(private familyService: FamilyService, private dialog: MatDialog) { }
+  	constructor(private familyService: FamilyService, private dialog: MatDialog, private router: Router) { }
 
   	ngOnInit() {  		
   		this.createD3Gauge();  
@@ -131,7 +132,6 @@ export class HomeComponent implements OnInit {
 
 
 	getFamily(): void {
-
   		let that = this;
   		this.familyService.getfamilies()
   			.subscribe(result => {   				
@@ -143,12 +143,23 @@ export class HomeComponent implements OnInit {
   	}
 
     getMembers(): void {
-
         let that = this;
         this.familyService.getMembers(document.cookie.split('uid=')[1].split(';')[0])
             .subscribe(result => {                  
                 that.members = result['rows'];                  
             });
     }
+
+    // logout(): void {
+    //     document.cookie = "";
+    //     this.router.navigate([''])
+    // }
+
+    // logout(): void {
+    //    this._auth.logout().subscribe(
+    //    (data)=>{
+    //      //return a boolean value.
+    //     })
+    //  }
 
 }
